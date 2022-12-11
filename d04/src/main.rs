@@ -1,9 +1,6 @@
 use nom::{
-    bytes::complete::tag,
-    character::complete::digit1,
-    combinator::{map_res, recognize, value},
-    sequence::separated_pair,
-    IResult,
+    bytes::complete::tag, character::complete::digit1, combinator::map_res,
+    sequence::separated_pair, IResult,
 };
 use utils::read_lines;
 
@@ -41,10 +38,19 @@ fn test_assignment_pair() {
     );
 }
 
+fn is_fully_contained(assignment_pair: &AssignmentPair) -> bool {
+    let (assignment1, assignment2) = assignment_pair;
+    (assignment1.0 <= assignment2.0 && assignment1.1 >= assignment2.1)
+        || (assignment2.0 <= assignment1.0 && assignment2.1 >= assignment1.1)
+}
+
 fn main() {
-    for line in read_lines("input.txt").unwrap() {
-        let line = line.unwrap();
-        let assignment_pair = assignment_pair(line.as_str()).map(|x| x.1);
-        println!("{:#?}", assignment_pair.unwrap())
-    }
+    let assignment_pairs = read_lines("input.txt").unwrap().map(|line| {
+        assignment_pair(line.unwrap().as_str())
+            .map(|x| x.1)
+            .unwrap()
+    });
+
+    let fully_contained_count = assignment_pairs.filter(|x| is_fully_contained(x)).count();
+    println!("{}", fully_contained_count);
 }
