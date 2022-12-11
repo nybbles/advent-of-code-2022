@@ -38,10 +38,27 @@ fn test_assignment_pair() {
     );
 }
 
+#[allow(dead_code)]
 fn is_fully_contained(assignment_pair: &AssignmentPair) -> bool {
     let (assignment1, assignment2) = assignment_pair;
     (assignment1.0 <= assignment2.0 && assignment1.1 >= assignment2.1)
         || (assignment2.0 <= assignment1.0 && assignment2.1 >= assignment1.1)
+}
+
+fn has_overlap(assignment_pair: &AssignmentPair) -> bool {
+    let (assignment1, assignment2) = assignment_pair;
+
+    let first_assignment;
+    let second_assignment;
+    if assignment1.0 <= assignment2.0 {
+        first_assignment = assignment1;
+        second_assignment = assignment2;
+    } else {
+        first_assignment = assignment2;
+        second_assignment = assignment1;
+    }
+
+    first_assignment.1 >= second_assignment.0
 }
 
 fn main() {
@@ -51,6 +68,6 @@ fn main() {
             .unwrap()
     });
 
-    let fully_contained_count = assignment_pairs.filter(|x| is_fully_contained(x)).count();
-    println!("{}", fully_contained_count);
+    let overlap_count = assignment_pairs.filter(|x| has_overlap(x)).count();
+    println!("{}", overlap_count);
 }
